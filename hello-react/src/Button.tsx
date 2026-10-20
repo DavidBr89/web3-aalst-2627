@@ -23,7 +23,7 @@ const Button = ({ label, children, size = 250 }: IButtonProps) => {
         height: `${size}px`,
       }}>
       <p>{label}</p>
-      <button>{children}</button>
+      <button onClick={() => {}}>{children}</button>
     </div>
   );
 };
