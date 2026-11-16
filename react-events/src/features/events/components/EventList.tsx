@@ -1,47 +1,29 @@
-import React, { useEffect, useState } from "react";
-
-import Axios from "axios";
-import type { TMEvent, TMResponse } from "../types";
+import { useState } from "react";
 import EventCard from "./EventCard";
-import { getEvents } from "../api";
+import { useEvents } from "../hooks/useEvents";
 
 const EventList = () => {
-  const [events, setEvents] = useState<TMEvent[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { data, dataUpdatedAt, isError, error, isLoading } = useEvents();
 
-  //   useEffect wordt opgeroepen na een commit
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await getEvents();
-        setEvents(response.data._embedded.events);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchEvents();
-  }, []);
+  if (isLoading) {
+    return <p>Laden....</p>;
+  }
 
-  //   useEffect(() => {
-  //     const timerId = setInterval(() => {
-  //       console.log("Tick");
-  //     }, 1000);
-
-  //     // Cleanup functie returnen
-  //     return () => {
-  //       clearInterval(timerId);
-  //     };
-  //   }, []);
+  if (isError) {
+    return <p>Er is iets fout gegaan: {error.message}</p>;
+  }
 
   return (
     <div>
+      <p>{new Date(dataUpdatedAt).toLocaleTimeString()}</p>
       <button
         onClick={() => {
           setIsRefreshing(!isRefreshing);
         }}>
         Refresh data
       </button>
-      {events.map((e) => (
+      {data?._embedded.events.map((e) => (
         <EventCard key={e.id} event={e} />
       ))}
     </div>
